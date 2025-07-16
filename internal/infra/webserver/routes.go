@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/jwtauth"
 	"gorm.io/gorm"
 )
 
@@ -32,8 +33,9 @@ func SetupRoutes(db *gorm.DB) *chi.Mux {
 	productHandler := handlers.NewProductHandler(productRepo)
 	userHandler := handlers.NewUserHandler(userRepo, cfg.TokenAuth, cfg.JwtExpiration)
 
-	// Product routes
 	r.Route("/products", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(cfg.TokenAuth))
+		r.Use(jwtauth.Authenticator)                    // Middleware to protect routes with JWT authentication
 		r.Post("/", productHandler.CreateProduct)       // POST /products
 		r.Get("/", productHandler.GetAllProducts)       // GET /products?page=1&limit=10&sort=asc
 		r.Get("/{id}", productHandler.GetProduct)       // GET /products/{id}

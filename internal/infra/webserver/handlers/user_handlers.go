@@ -54,7 +54,7 @@ func (h *UserHandler) GetJwt(w http.ResponseWriter, r *http.Request) {
 	// Generate JWT token
 	_, tokenString, err := h.Jwt.Encode(map[string]interface{}{
 		"sub": existingUser.ID,
-		"exp": time.Now().Add(time.Duration(h.JwtExpiration)).Unix(),
+		"exp": time.Now().Add(time.Duration(h.JwtExpiration) * time.Second).Unix(),
 	})
 	if err != nil {
 		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
